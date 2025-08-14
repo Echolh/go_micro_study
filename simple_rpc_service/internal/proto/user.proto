@@ -1,0 +1,24 @@
+// 使用 Protocol Buffers 语法版本 
+syntax = "proto3";
+
+// 包名，用于避免命名冲突
+package user;
+
+// 生成文件存放的路径
+option go_package=".;proto";
+
+service UserService{
+
+  rpc GetUser(GetUserRequest)returns(GetUserResponse);
+
+}
+
+// 获取用户请求
+message GetUserRequest {}
+
+// 获取用户的返回值
+message GetUserResponse{
+   int64 id = 1;
+   string name =2;
+   int32 age =3;
+}
