@@ -4,10 +4,11 @@ import (
 	"net/http"
 	"simple_http_svc/internal/config"
 	user "simple_http_svc/internal/handler"
+	"simple_http_svc/internal/middleware"
 	"time"
 )
 
-func New(cfg *config.Config) http.Handler {
+func NewRouter(cfg *config.Config) http.Handler {
 
 	// 创建多路复用器
 	mux := http.NewServeMux()
@@ -15,9 +16,11 @@ func New(cfg *config.Config) http.Handler {
 	// 添加路由
 	mux.HandleFunc("/get-user", user.UserHandler.GetUser)
 
-	// TODO:全局中间件
+	// 全局中间件
+	server := middleware.Apply(mux, middleware.RequestLog(), middleware.Recover())
 
-	handler := http.TimeoutHandler(mux,
+	// 设置超时
+	handler := http.TimeoutHandler(server,
 		time.Duration(cfg.Server.ReadTimeout)*time.Second,
 		"request timeout")
 

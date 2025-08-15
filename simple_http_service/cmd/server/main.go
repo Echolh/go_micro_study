@@ -16,7 +16,7 @@ func main() {
 		panic(err)
 	}
 	// 注册路由
-	h := router.New(config)
+	h := router.NewRouter(config)
 
 	// 创建http服务
 	server := http.Server{
@@ -26,12 +26,13 @@ func main() {
 		WriteTimeout: time.Duration(config.Server.WriteTimeout) * time.Second,
 	}
 
+	// 启动服务
 	log.Printf("Server is running on port %s in %s mode", config.Server.Port, config.Env)
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("http server err: %+v", err)
 	}
 
-	// // 启动服务器（非阻塞）
+	// 启动服务器（非阻塞）
 	// go func() {
 	// 	log.Printf("Server is running on port %s in %s mode", cfg.Server.Port, cfg.Env)
 	// 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -39,13 +40,13 @@ func main() {
 	// 	}
 	// }()
 
-	// // 优雅关闭
+	// 优雅关闭
 	// quit := make(chan os.Signal, 1)
 	// signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	// <-quit
 	// log.Println("Shutting down server...")
 
-	// // 5秒超时关闭
+	// 5秒超时关闭
 	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	// defer cancel()
 	// if err := srv.Shutdown(ctx); err != nil {
