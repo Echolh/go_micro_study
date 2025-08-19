@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
+	_ "net/http/pprof" // 导入 pprof 包
 	"os"
 	"os/signal"
 	"simple_rpc_svc/internal/config"
@@ -21,6 +23,13 @@ func main() {
 
 	// 创建并启动gPRC服务器
 	grpcServer := server.NewGRPCServer(cfg)
+
+	// 2. 启动 pprof 服务（单独端口，如 6061）
+	go func() {
+		if err := http.ListenAndServe(":"+cfg.Server.PProfPort, nil); err != nil {
+			panic("gRPC pprof 服务启动失败: " + err.Error())
+		}
+	}()
 
 	// 在goroutine中启动服务器，避免阻塞
 	// grpcServer.Start() 会一直阻塞（监听端口、处理请求），

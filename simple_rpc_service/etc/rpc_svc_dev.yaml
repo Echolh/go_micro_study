@@ -8,6 +8,7 @@ server:
   port: 5808
   read_timeout: 5 # 秒
   write_timeout: 10 # 秒
+  pprof_port: 580
 
 # auth配置
 auth:

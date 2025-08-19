@@ -21,6 +21,7 @@ type ServerConfig struct {
 	Port         string `mapstructure:"port"`
 	ReadTimeout  int    `mapstructure:"read_timeout"`
 	WriteTimeout int    `mapstructure:"write_out"`
+	PProfPort    string `mapstructure:"pprof_port"`
 }
 
 // 授权 配置

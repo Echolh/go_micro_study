@@ -94,3 +94,33 @@ go run cmd/server/main.go
 - 如果**有优雅关闭**：服务会先拒绝新请求，等当前订单处理完再退出，确保数据正确。
 
 总结：优雅关闭的核心是 “收到终止信号后，先处理完手头的工作，再安全退出”，这段代码通过 “信号监听 + 超时控制 + 框架的优雅关闭方法” 实现了这个目标。
+
+
+
+## 2025年08月15日
+
+ ### 增加pprof服务
+
+1. 导入 `_ "net/http/pprof"`，即可自动注册 pprof 路由（无需额外代码）。
+
+   ```go
+   import (
+       "net/http"
+       _ "net/http/pprof" // 导入 pprof 包
+   )
+   ```
+
+   
+
+2. 启动pprof服务，单独开启一个goroutine 来运行服务`
+
+   ```go
+    // 2. 启动 pprof 服务（单独端口，如 6061）
+    go func() {
+           if err := http.ListenAndServe("0.0.0.0:6061", nil); err != nil {
+               panic("gRPC pprof 服务启动失败: " + err.Error())
+           }
+       }()
+   ```
+
+   

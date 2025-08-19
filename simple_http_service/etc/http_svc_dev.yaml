@@ -5,8 +5,9 @@ env: development
 server:
   name: http_server
   port: 8080
-  read_timeout: 5 # 秒
-  write_timeout: 10 # 秒
+  read_timeout: 120 # 秒
+  write_timeout: 120 # 秒
+  pprof_port: 8090
 
 # auth配置
 auth:

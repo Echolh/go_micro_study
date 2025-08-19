@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	_ "net/http/pprof" // 导入 pprof 包
 	"simple_http_svc/internal/config"
 	"simple_http_svc/internal/router"
 	"time"
@@ -26,10 +27,19 @@ func main() {
 		WriteTimeout: time.Duration(config.Server.WriteTimeout) * time.Second,
 	}
 
+	// 单独启用一个goroutine 运行pprof服务
+	go func() {
+		// pprof 服务默认监听 6060 端口（可自定义）
+		// if err := http.ListenAndServe("0.0.0.0:6060", nil); err != nil {
+		if err := http.ListenAndServe(":"+config.Server.PProfPort, nil); err != nil {
+			log.Fatalf("pprof 服务启动失败, err:%v", err)
+		}
+	}()
+
 	// 启动服务
-	log.Printf("Server is running on port %s in %s mode", config.Server.Port, config.Env)
+	log.Printf("服务运行在端口： %s ，运行模式 ：%s ", config.Server.Port, config.Env)
 	if err := server.ListenAndServe(); err != nil {
-		log.Fatalf("http server err: %+v", err)
+		log.Fatalf("HTTP 服务启动失败， err: %+v", err)
 	}
 
 	// 启动服务器（非阻塞）
@@ -53,6 +63,6 @@ func main() {
 	// 	log.Fatal("Server forced to shutdown:", err)
 	// }
 
-	log.Println("Server exiting")
+	log.Println("服务退出！")
 
 }

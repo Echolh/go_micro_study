@@ -3,8 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-
 	model "simple_http_svc/internal/model"
+	"simple_http_svc/pkg/log"
 )
 
 var UserHandler userHandler
@@ -18,6 +18,7 @@ func (h *userHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 		Name: "jack",
 		Age:  20,
 	}
+	log.Logger.Error("测试错误日志")
 	// panic("爆炸")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

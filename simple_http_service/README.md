@@ -55,7 +55,7 @@ func NewRouter(cfg *config.Config) http.Handler {
 
 ## 2025年08月15日
 
- 增加中间件功能
+###  增加中间件功能
 
 有时候需要在请求处理代码中增加一些通用的逻辑，如统计处理耗时、记录日志、捕获宕机等等。如果在每个请求处理函数中添加这些逻辑，代码很快就会变得不可维护，添加新的处理函数也会变得非常繁琐。所以就有了中间件的需求。
 
@@ -101,8 +101,55 @@ func Recover() Middleware {
 
 ```
 
-
-
-### 测试
+#### 测试
 
 ![image-20250815145632538](https://data-lh.top/image-20250815145632538.png)
+
+
+
+### 增加 pprof
+
+1. 导入 `_ "net/http/pprof"`，即可自动注册 pprof 路由（无需额外代码）。
+
+   ```go
+   import (
+       "net/http"
+       _ "net/http/pprof" // 导入 pprof 包
+   )
+   ```
+
+   
+
+2. 启动pprof服务，单独开启一个goroutine 来运行服务`
+
+   ```go
+    // 2. 启动 pprof 服务（单独端口，如 6061）
+    go func() {
+           if err := http.ListenAndServe("0.0.0.0:6061", nil); err != nil {
+               panic("gRPC pprof 服务启动失败: " + err.Error())
+           }
+       }()
+   ```
+
+   
+
+### 增加日志库- zap
+
+
+
+
+
+```go
+// 初始化log对象
+Logger, _ = zap.NewProduction()
+
+// 测试日志
+	pkg.Logger.Error("测试错误日志")
+
+//  输出 - 默认附带堆栈信息
+{"level":"error","ts":1755327183.628781,"caller":"handler/user.go:22","msg":"测试错误日志","stacktrace":"simple_http_svc/internal/handler.(*userHandler).GetUser\n\t/Users/lihang/go_micro_svc_study/simple_http_service/internal/handler/user.go:22\nnet/http.HandlerFunc.ServeHTTP\n\t/usr/local/go/src/net/http/server.go:2220\nnet/http.(*ServeMux).ServeHTTP\n\t/usr/local/go/src/net/http/server.go:2747\nsimple_http_svc/internal/router.NewRouter.RequestLog.func1.1\n\t/Users/lihang/go_micro_svc_study/simple_http_service/internal/middleware/request_log.go:33\nnet/http.HandlerFunc.ServeHTTP\n\t/usr/local/go/src/net/http/server.go:2220\nsimple_http_svc/internal/router.NewRouter.Recover.func2.1\n\t/Users/lihang/go_micro_svc_study/simple_http_service/internal/middleware/recover.go:24\nnet/http.HandlerFunc.ServeHTTP\n\t/usr/local/go/src/net/http/server.go:2220\nnet/http.(*timeoutHandler).ServeHTTP.func1\n\t/usr/local/go/src/net/http/server.go:3670"}
+2025/08/16 14:53:03 completed GET /get-user 200 671.666µs
+```
+
+
+
