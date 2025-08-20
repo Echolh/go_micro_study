@@ -202,6 +202,7 @@ func (p *WorkerPool) Shutdown() {
 		close(p.queue)
 	}
 
+	// 出错时，取消所有任务
 	if p.GetFirstError() != nil {
 		// 取消所有任务
 		p.cancel()
