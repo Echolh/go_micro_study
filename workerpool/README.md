@@ -130,3 +130,33 @@ func (p *workerPool) IsClosed()bool{
 }
 
  ```
+
+ ### 4. "接口 + 适配器" 模式
+
+- 接口：通过 Task 接口统一所有任务的func签名
+- 适配器：通过 TaskFunc 适配器，用户可以直接提交普通函数作为任务，适配器会自动转换为实现了Task接口的类型
+  
+```golang
+// 任务接口
+type Task interface {
+	Run(ctx context.Context) error
+}
+
+// 函数任务适配器
+type TaskFunc func(ctx context.Context) error
+
+// 实现Run函数
+func (t TaskFunc) Run(ctx context.Context) error {
+	return t(ctx)
+}
+
+// 添加func
+func (p *workerpool)AddTaskFunc(f func(ctx context.Context)err){
+      // 适配器将func转换为task的结构体
+      task:=TaskFunc(f)
+
+      // 加入队列
+      p.queue<- task
+}
+
+```
